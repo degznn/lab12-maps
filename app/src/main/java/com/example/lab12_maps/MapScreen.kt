@@ -11,6 +11,9 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.Marker
 import androidx.compose.ui.platform.LocalContext
+import androidx.core.content.ContextCompat
+import android.graphics.Bitmap
+import android.graphics.Canvas
 import com.example.lab12_maps.R
 
 
@@ -18,6 +21,9 @@ import com.example.lab12_maps.R
 fun MapScreen() {
     val context = LocalContext.current
     val arequipaLocation = LatLng(-16.4040102, -71.559611)
+    val boatIcon = BitmapDescriptorFactory.fromBitmap(
+        drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_boat)!!)
+    )
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(arequipaLocation, 12f)
     }
@@ -32,8 +38,18 @@ fun MapScreen() {
             Marker(
                 state = rememberMarkerState(position = arequipaLocation),
                 title = "Arequipa, Perú",
-                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_boat)
+                icon = boatIcon
             )
         }
     }
+}
+
+private fun drawableToBitmap(drawable: android.graphics.drawable.Drawable): Bitmap {
+    val width = if (drawable.intrinsicWidth > 0) drawable.intrinsicWidth else 48
+    val height = if (drawable.intrinsicHeight > 0) drawable.intrinsicHeight else 48
+    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.ARGB_8888)
+    val canvas = Canvas(bitmap)
+    drawable.setBounds(0, 0, canvas.width, canvas.height)
+    drawable.draw(canvas)
+    return bitmap
 }
