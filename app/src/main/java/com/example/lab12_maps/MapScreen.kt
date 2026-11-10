@@ -5,7 +5,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -117,29 +116,32 @@ fun MapScreen() {
                 width = 10f
             )
         }
-        Column(
+        Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
                 .padding(top = 48.dp),
-            verticalArrangement = Arrangement.spacedBy(4.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
-            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
-                Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
-                Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
-                Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
-            }
-            Button(onClick = {
+            Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
+            Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
+            Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
+            Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+        }
+        Button(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .zIndex(1f)
+                .padding(bottom = 64.dp),
+            onClick = {
                 locationPermissionLauncher.launch(
                     arrayOf(
                         android.Manifest.permission.ACCESS_FINE_LOCATION,
                         android.Manifest.permission.ACCESS_COARSE_LOCATION
                     )
                 )
-            }) { Text("Mi ubicación") }
-        }
+            }
+        ) { Text("Mi ubicación") }
     }
 }
 
