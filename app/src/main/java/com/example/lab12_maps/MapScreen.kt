@@ -132,7 +132,7 @@ fun MapScreen() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .zIndex(1f)
-                .padding(bottom = 64.dp),
+                .padding(bottom = 32.dp),
             onClick = {
                 locationPermissionLauncher.launch(
                     arrayOf(
@@ -141,7 +141,7 @@ fun MapScreen() {
                     )
                 )
             }
-        ) { Text("Mi ubicación") }
+        ) { Text("Mi ubicación exacta") }
     }
 }
 
