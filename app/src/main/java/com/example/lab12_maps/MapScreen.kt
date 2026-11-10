@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -116,17 +117,20 @@ fun MapScreen() {
                 width = 10f
             )
         }
-        Row(
+        Column(
             modifier = Modifier
                 .align(Alignment.TopCenter)
                 .zIndex(1f)
                 .padding(top = 48.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
+            verticalArrangement = Arrangement.spacedBy(4.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
-            Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
-            Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
-            Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+            Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
+                Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
+                Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
+                Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
+                Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+            }
             Button(onClick = {
                 locationPermissionLauncher.launch(
                     arrayOf(
