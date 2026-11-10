@@ -8,6 +8,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.Marker
 
 
@@ -27,7 +28,10 @@ fun MapScreen() {
         ) {
             Marker(
                 state = rememberMarkerState(position = arequipaLocation),
-                title = "Arequipa, Perú"
+                title = "Arequipa, Perú",
+                icon = BitmapDescriptorFactory.defaultMarker(
+                    BitmapDescriptorFactory.HUE_BLUE
+                )
             )
         }
     }
