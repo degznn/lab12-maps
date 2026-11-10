@@ -2,12 +2,19 @@ package com.example.lab12_maps
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Button
+import androidx.compose.material3.Text
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
@@ -15,6 +22,7 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
+import com.google.maps.android.compose.MapType
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.Polyline
 import androidx.compose.ui.platform.LocalContext
@@ -42,9 +50,15 @@ fun MapScreen() {
         LatLng(-16.320000, -71.640000)
     )
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
-    val mapProperties = remember {
-        MapProperties(mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark))
-    }
+    var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    val mapProperties = MapProperties(
+        mapType = mapType,
+        mapStyleOptions = if (mapType == MapType.NORMAL) {
+            MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark)
+        } else {
+            null
+        }
+    )
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(arequipaLocation, 12f)
     }
@@ -89,6 +103,17 @@ fun MapScreen() {
                 color = androidx.compose.ui.graphics.Color(0xFFFF8A65),
                 width = 10f
             )
+        }
+        Row(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .padding(top = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
+        ) {
+            Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
+            Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
+            Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
+            Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
         }
     }
 }
