@@ -27,6 +27,11 @@ import com.example.lab12_maps.R
 fun MapScreen() {
     val context = LocalContext.current
     val arequipaLocation = LatLng(-16.4040102, -71.559611)
+    val locations = listOf(
+        Triple(LatLng(-16.433415, -71.5442652), "José Luis Bustamante y Rivero", "Zona de referencia 1"),
+        Triple(LatLng(-16.4205151, -71.4945209), "Paucarpata", "Zona de referencia 2"),
+        Triple(LatLng(-16.3524187, -71.5675994), "Zamácola", "Zona de referencia 3")
+    )
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     val mapProperties = remember {
         MapProperties(mapStyleOptions = MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark))
@@ -53,6 +58,14 @@ fun MapScreen() {
                 title = "Arequipa, Perú",
                 icon = boatIcon
             )
+            locations.forEach { (location, title, snippet) ->
+                Marker(
+                    state = rememberMarkerState(position = location),
+                    title = title,
+                    snippet = snippet,
+                    icon = boatIcon
+                )
+            }
         }
     }
 }
