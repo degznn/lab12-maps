@@ -3,6 +3,10 @@ package com.example.lab12_maps
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.rememberCameraPositionState
@@ -21,9 +25,7 @@ import com.example.lab12_maps.R
 fun MapScreen() {
     val context = LocalContext.current
     val arequipaLocation = LatLng(-16.4040102, -71.559611)
-    val boatIcon = BitmapDescriptorFactory.fromBitmap(
-        drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_boat)!!)
-    )
+    var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(arequipaLocation, 12f)
     }
@@ -33,7 +35,12 @@ fun MapScreen() {
         // Añadir GoogleMap al layout
         GoogleMap(
             modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState
+            cameraPositionState = cameraPositionState,
+            onMapLoaded = {
+                boatIcon = BitmapDescriptorFactory.fromBitmap(
+                    drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_boat)!!)
+                )
+            }
         ) {
             Marker(
                 state = rememberMarkerState(position = arequipaLocation),
