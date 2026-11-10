@@ -10,10 +10,13 @@ import com.google.maps.android.compose.rememberMarkerState
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.maps.android.compose.Marker
+import androidx.compose.ui.platform.LocalContext
+import com.example.lab12_maps.R
 
 
 @Composable
 fun MapScreen() {
+    val context = LocalContext.current
     val arequipaLocation = LatLng(-16.4040102, -71.559611)
     val cameraPositionState = rememberCameraPositionState {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(arequipaLocation, 12f)
@@ -29,9 +32,7 @@ fun MapScreen() {
             Marker(
                 state = rememberMarkerState(position = arequipaLocation),
                 title = "Arequipa, Perú",
-                icon = BitmapDescriptorFactory.defaultMarker(
-                    BitmapDescriptorFactory.HUE_BLUE
-                )
+                icon = BitmapDescriptorFactory.fromResource(R.drawable.ic_boat)
             )
         }
     }
