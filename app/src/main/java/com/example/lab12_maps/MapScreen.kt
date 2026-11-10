@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.compose.material3.Button
 import androidx.compose.material3.Text
 import com.google.maps.android.compose.GoogleMap
@@ -107,7 +108,8 @@ fun MapScreen() {
         Row(
             modifier = Modifier
                 .align(Alignment.TopCenter)
-                .padding(top = 16.dp),
+                .zIndex(1f)
+                .padding(top = 48.dp),
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
