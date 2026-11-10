@@ -10,6 +10,9 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.unit.dp
@@ -52,8 +55,16 @@ fun MapScreen() {
     )
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    var locationEnabled by rememberSaveable { mutableStateOf(false) }
+    val locationPermissionLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        locationEnabled = permissions[android.Manifest.permission.ACCESS_FINE_LOCATION] == true ||
+            permissions[android.Manifest.permission.ACCESS_COARSE_LOCATION] == true
+    }
     val mapProperties = MapProperties(
         mapType = mapType,
+        isMyLocationEnabled = locationEnabled,
         mapStyleOptions = if (mapType == MapType.NORMAL) {
             MapStyleOptions.loadRawResourceStyle(context, R.raw.map_style_dark)
         } else {
@@ -116,6 +127,14 @@ fun MapScreen() {
             Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
             Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
             Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+            Button(onClick = {
+                locationPermissionLauncher.launch(
+                    arrayOf(
+                        android.Manifest.permission.ACCESS_FINE_LOCATION,
+                        android.Manifest.permission.ACCESS_COARSE_LOCATION
+                    )
+                )
+            }) { Text("Mi ubicación") }
         }
     }
 }
