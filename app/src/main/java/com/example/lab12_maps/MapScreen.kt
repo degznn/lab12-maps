@@ -20,6 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import android.graphics.Bitmap
 import android.graphics.Canvas
+import androidx.compose.runtime.LaunchedEffect
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.example.lab12_maps.R
 
 
@@ -40,6 +42,15 @@ fun MapScreen() {
         position = com.google.android.gms.maps.model.CameraPosition.fromLatLngZoom(arequipaLocation, 12f)
     }
 
+    LaunchedEffect(Unit) {
+        cameraPositionState.animate(
+            update = CameraUpdateFactory.newLatLngZoom(
+                LatLng(-16.2520984, -71.6836503),
+                12f
+            ),
+            durationMs = 3000
+        )
+    }
 
     Box(modifier = Modifier.fillMaxSize()) {
         // Añadir GoogleMap al layout
