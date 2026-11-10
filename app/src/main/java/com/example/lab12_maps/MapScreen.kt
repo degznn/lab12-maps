@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.compose.MapProperties
 import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat
 import android.graphics.Bitmap
@@ -33,6 +34,12 @@ fun MapScreen() {
         Triple(LatLng(-16.433415, -71.5442652), "José Luis Bustamante y Rivero", "Zona de referencia 1"),
         Triple(LatLng(-16.4205151, -71.4945209), "Paucarpata", "Zona de referencia 2"),
         Triple(LatLng(-16.3524187, -71.5675994), "Zamácola", "Zona de referencia 3")
+    )
+    val routePoints = listOf(
+        LatLng(-16.4040102, -71.559611),
+        LatLng(-16.386000, -71.548000),
+        LatLng(-16.360000, -71.575000),
+        LatLng(-16.320000, -71.640000)
     )
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     val mapProperties = remember {
@@ -77,6 +84,11 @@ fun MapScreen() {
                     icon = boatIcon
                 )
             }
+            Polyline(
+                points = routePoints,
+                color = androidx.compose.ui.graphics.Color(0xFFFF8A65),
+                width = 10f
+            )
         }
     }
 }
