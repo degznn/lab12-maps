@@ -35,9 +35,13 @@ import android.graphics.Bitmap
 import android.graphics.Canvas
 import androidx.compose.runtime.LaunchedEffect
 import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.StreetViewPanoramaOptions
+import com.google.maps.android.ktx.MapsExperimentalFeature
+import com.google.maps.android.compose.streetview.StreetView
 import com.example.lab12_maps.R
 
 
+@OptIn(MapsExperimentalFeature::class)
 @Composable
 fun MapScreen() {
     val context = LocalContext.current
@@ -55,6 +59,7 @@ fun MapScreen() {
     )
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
+    var showStreetView by rememberSaveable { mutableStateOf(false) }
     var locationEnabled by rememberSaveable { mutableStateOf(false) }
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -86,62 +91,80 @@ fun MapScreen() {
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
-        // Añadir GoogleMap al layout
-        GoogleMap(
-            modifier = Modifier.fillMaxSize(),
-            cameraPositionState = cameraPositionState,
-            properties = mapProperties,
-            onMapLoaded = {
-                boatIcon = BitmapDescriptorFactory.fromBitmap(
-                    drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_boat)!!)
-                )
-            }
-        ) {
-            Marker(
-                state = rememberMarkerState(position = arequipaLocation),
-                title = "Arequipa, Perú",
-                icon = boatIcon
+        if (showStreetView) {
+            StreetView(
+                modifier = Modifier.fillMaxSize(),
+                streetViewPanoramaOptionsFactory = {
+                    StreetViewPanoramaOptions()
+                        .position(LatLng(-16.398866, -71.536961))
+                }
             )
-            locations.forEach { (location, title, snippet) ->
+        } else {
+            GoogleMap(
+                modifier = Modifier.fillMaxSize(),
+                cameraPositionState = cameraPositionState,
+                properties = mapProperties,
+                onMapLoaded = {
+                    boatIcon = BitmapDescriptorFactory.fromBitmap(
+                        drawableToBitmap(ContextCompat.getDrawable(context, R.drawable.ic_boat)!!)
+                    )
+                }
+            ) {
                 Marker(
-                    state = rememberMarkerState(position = location),
-                    title = title,
-                    snippet = snippet,
+                    state = rememberMarkerState(position = arequipaLocation),
+                    title = "Arequipa, Perú",
                     icon = boatIcon
                 )
+                locations.forEach { (location, title, snippet) ->
+                    Marker(
+                        state = rememberMarkerState(position = location),
+                        title = title,
+                        snippet = snippet,
+                        icon = boatIcon
+                    )
+                }
+                Polyline(
+                    points = routePoints,
+                    color = androidx.compose.ui.graphics.Color(0xFFFF8A65),
+                    width = 10f
+                )
             }
-            Polyline(
-                points = routePoints,
-                color = androidx.compose.ui.graphics.Color(0xFFFF8A65),
-                width = 10f
-            )
         }
-        Row(
-            modifier = Modifier
-                .align(Alignment.TopCenter)
-                .zIndex(1f)
-                .padding(top = 48.dp),
-            horizontalArrangement = Arrangement.spacedBy(4.dp)
-        ) {
-            Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
-            Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
-            Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
-            Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+        if (!showStreetView) {
+            Row(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .zIndex(1f)
+                    .padding(top = 48.dp),
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Button(onClick = { mapType = MapType.NORMAL }) { Text("Normal") }
+                Button(onClick = { mapType = MapType.SATELLITE }) { Text("Satélite") }
+                Button(onClick = { mapType = MapType.TERRAIN }) { Text("Terreno") }
+                Button(onClick = { mapType = MapType.HYBRID }) { Text("Híbrido") }
+            }
+            Button(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .zIndex(1f)
+                    .padding(bottom = 32.dp),
+                onClick = {
+                    locationPermissionLauncher.launch(
+                        arrayOf(
+                            android.Manifest.permission.ACCESS_FINE_LOCATION,
+                            android.Manifest.permission.ACCESS_COARSE_LOCATION
+                        )
+                    )
+                }
+            ) { Text("Mi ubicación exacta") }
         }
         Button(
             modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .zIndex(1f)
-                .padding(bottom = 32.dp),
-            onClick = {
-                locationPermissionLauncher.launch(
-                    arrayOf(
-                        android.Manifest.permission.ACCESS_FINE_LOCATION,
-                        android.Manifest.permission.ACCESS_COARSE_LOCATION
-                    )
-                )
-            }
-        ) { Text("Mi ubicación exacta") }
+                .align(Alignment.BottomEnd)
+                .zIndex(2f)
+                .padding(end = 16.dp, bottom = 96.dp),
+            onClick = { showStreetView = !showStreetView }
+        ) { Text(if (showStreetView) "Volver al mapa" else "Vista 360°") }
     }
 }
 
