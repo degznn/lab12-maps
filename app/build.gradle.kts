@@ -43,6 +43,7 @@ dependencies {
     implementation("com.google.maps.android:maps-compose:$mapsComposeVersion")
     implementation("com.google.maps.android:maps-compose-utils:$mapsComposeVersion")
     implementation("com.google.maps.android:maps-compose-widgets:$mapsComposeVersion")
+    implementation("com.google.android.libraries.places:places:5.1.1")
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.activity.compose)
