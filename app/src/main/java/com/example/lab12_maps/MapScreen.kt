@@ -1,5 +1,6 @@
 package com.example.lab12_maps
 
+import android.app.Activity
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.Row
@@ -38,6 +39,10 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.StreetViewPanoramaOptions
 import com.google.maps.android.ktx.MapsExperimentalFeature
 import com.google.maps.android.compose.streetview.StreetView
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
+import com.google.android.libraries.places.widget.PlaceAutocomplete
 import com.example.lab12_maps.R
 
 
@@ -60,6 +65,31 @@ fun MapScreen() {
     var boatIcon by remember { mutableStateOf<com.google.android.gms.maps.model.BitmapDescriptor?>(null) }
     var mapType by remember { mutableStateOf(MapType.NORMAL) }
     var showStreetView by rememberSaveable { mutableStateOf(false) }
+    var selectedPlace by remember { mutableStateOf<LatLng?>(null) }
+    var selectedPlaceName by remember { mutableStateOf("Lugar encontrado") }
+    var selectedPlaceAddress by remember { mutableStateOf("") }
+    val placesClient = remember { Places.createClient(context) }
+    val placeSearchLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        val data = result.data
+        if (result.resultCode == Activity.RESULT_OK && data != null) {
+            val prediction = PlaceAutocomplete.getPredictionFromIntent(data)
+            if (prediction != null) {
+                val request = FetchPlaceRequest.newInstance(
+                    prediction.placeId,
+                    listOf(Place.Field.DISPLAY_NAME, Place.Field.FORMATTED_ADDRESS, Place.Field.LOCATION)
+                )
+                placesClient.fetchPlace(request)
+                    .addOnSuccessListener { response ->
+                        val place = response.place
+                        selectedPlace = place.location
+                        selectedPlaceName = place.displayName ?: prediction.getPrimaryText(null).toString()
+                        selectedPlaceAddress = place.formattedAddress.orEmpty()
+                    }
+            }
+        }
+    }
     var locationEnabled by rememberSaveable { mutableStateOf(false) }
     val locationPermissionLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.RequestMultiplePermissions()
@@ -88,6 +118,15 @@ fun MapScreen() {
             ),
             durationMs = 3000
         )
+    }
+
+    LaunchedEffect(selectedPlace) {
+        selectedPlace?.let { location ->
+            cameraPositionState.animate(
+                update = CameraUpdateFactory.newLatLngZoom(location, 16f),
+                durationMs = 1500
+            )
+        }
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -121,6 +160,13 @@ fun MapScreen() {
                         title = title,
                         snippet = snippet,
                         icon = boatIcon
+                    )
+                }
+                selectedPlace?.let { location ->
+                    Marker(
+                        state = rememberMarkerState(position = location),
+                        title = selectedPlaceName,
+                        snippet = selectedPlaceAddress
                     )
                 }
                 Polyline(
@@ -158,6 +204,20 @@ fun MapScreen() {
                 }
             ) { Text("Mi ubicación exacta") }
         }
+        Button(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .zIndex(2f)
+                .padding(start = 16.dp, bottom = 96.dp),
+            onClick = {
+                val intent = PlaceAutocomplete.IntentBuilder()
+                    .setCountries(listOf("PE"))
+                    .setRegionCode("PE")
+                    .setOrigin(arequipaLocation)
+                    .build(context)
+                placeSearchLauncher.launch(intent)
+            }
+        ) { Text("Buscar lugar") }
         Button(
             modifier = Modifier
                 .align(Alignment.BottomEnd)
